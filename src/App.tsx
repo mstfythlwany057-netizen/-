@@ -44,7 +44,7 @@ export default function App() {
       <nav className="w-20 md:w-64 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col items-center md:items-start p-4 shrink-0 transition-all duration-300">
         <div className="flex items-center gap-3 mb-10 text-emerald-600 dark:text-emerald-400 w-full px-2">
           <BookOpen size={32} strokeWidth={2.5} />
-          <h1 className="text-2xl font-bold hidden md:block">طريق النجاح</h1>
+          <h1 className="text-2xl font-bold hidden md:block">Thrive</h1>
         </div>
         
         <ul className="flex flex-col gap-2 w-full">

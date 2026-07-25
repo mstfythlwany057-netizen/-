@@ -23,7 +23,7 @@ export default function DashboardView({ store }: { store: any }) {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold">نظرة عامة</h2>
-        <div className="text-sm text-slate-500 font-medium">مرحباً بك في طريق النجاح 🚀</div>
+        <div className="text-sm text-slate-500 font-medium">مرحباً بك في Thrive 🚀</div>
       </div>
       
       <div className={`p-6 rounded-2xl flex items-center justify-between transition-all duration-500 shadow-sm ${motivation.bg}`}>

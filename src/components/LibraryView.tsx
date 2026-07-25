@@ -1,84 +1,207 @@
-import React, { useState } from 'react';
-import { BookMarked, Download, Search, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BookMarked, Search, FileText, Loader2, BookOpen, Download } from 'lucide-react';
 
-const STATIC_BOOKS = [
+const EDUCATIONAL_BOOKS = [
+  // ثانوية عامة
   {
-    id: '1',
-    title: 'أساسيات الفيزياء',
-    category: 'العلوم',
-    author: 'أ. ديفيد هاليدي',
-    pages: 450,
-    coverColor: 'bg-blue-500',
-    description: 'كتاب شامل يغطي أساسيات الميكانيكا والحرارة والموجات.',
-    url: '#', // In a real app, this would be a link to a PDF
+    id: 'edu-eg-thanawya-arabic',
+    volumeInfo: {
+      title: 'اللغة العربية - الصف الثالث الثانوي العام',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'المنهج الرسمي للغة العربية للثانوية العامة: النحو، الصرف، البلاغة، الأدب والنصوص، والقراءة.',
+      pageCount: 350,
+      categories: ['ثانوية عامة', 'مناهج مصرية', 'لغة عربية'],
+      infoLink: '#',
+    }
   },
   {
-    id: '2',
-    title: 'مقدمة في الخوارزميات',
-    category: 'علوم الحاسب',
-    author: 'توماس كورمن',
-    pages: 1312,
-    coverColor: 'bg-emerald-600',
-    description: 'المرجع الأساسي لتعلم الخوارزميات وهياكل البيانات.',
-    url: '#',
+    id: 'edu-eg-thanawya-physics',
+    volumeInfo: {
+      title: 'الفيزياء - الصف الثالث الثانوي العام',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'منهج الفيزياء للثانوية العامة: الكهربية والتيار المتردد، والفيزياء الحديثة (ميكانيكا الكم والفيزياء الذرية).',
+      pageCount: 420,
+      categories: ['ثانوية عامة', 'مناهج مصرية', 'فيزياء'],
+      infoLink: '#',
+    }
   },
   {
-    id: '3',
-    title: 'تاريخ العالم الحديث',
-    category: 'التاريخ',
-    author: 'بالمر وكولتون',
-    pages: 800,
-    coverColor: 'bg-amber-600',
-    description: 'نظرة شاملة على الأحداث التاريخية منذ النهضة وحتى العصر الحديث.',
-    url: '#',
+    id: 'edu-eg-thanawya-math-pure',
+    volumeInfo: {
+      title: 'الرياضيات البحتة (التفاضل والتكامل) - ثانوية عامة',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'كتاب الرياضيات البحتة (التفاضل والتكامل) لطلاب الصف الثالث الثانوي (علمي رياضة).',
+      pageCount: 290,
+      categories: ['ثانوية عامة', 'مناهج مصرية', 'رياضيات'],
+      infoLink: '#',
+    }
   },
   {
-    id: '4',
-    title: 'الرياضيات المتقدمة',
-    category: 'الرياضيات',
-    author: 'د. جورج توماس',
-    pages: 650,
-    coverColor: 'bg-indigo-500',
-    description: 'شرح مفصل للتفاضل والتكامل والهندسة التحليلية.',
-    url: '#',
+    id: 'edu-eg-thanawya-history',
+    volumeInfo: {
+      title: 'التاريخ - الصف الثالث الثانوي (أدبي)',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'تاريخ مصر الحديث والمعاصر، وتاريخ العرب الحديث للثانوية العامة (القسم الأدبي).',
+      pageCount: 310,
+      categories: ['ثانوية عامة', 'مناهج مصرية', 'تاريخ'],
+      infoLink: '#',
+    }
+  },
+  // ثانوية أزهرية
+  {
+    id: 'edu-azhar-fiqh',
+    volumeInfo: {
+      title: 'الفقه المذهبي - ثانوية أزهرية',
+      authors: ['قطاع المعاهد الأزهرية'],
+      description: 'كتاب الفقه المقرر على طلاب الصف الثالث الثانوي الأزهري (القسمين العلمي والأدبي).',
+      pageCount: 450,
+      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'علوم شرعية'],
+      infoLink: '#',
+    }
   },
   {
-    id: '5',
-    title: 'قواعد اللغة العربية',
-    category: 'اللغات',
-    author: 'أحمد الهاشمي',
-    pages: 320,
-    coverColor: 'bg-rose-500',
-    description: 'شرح مبسط ووافٍ لقواعد النحو والصرف.',
-    url: '#',
+    id: 'edu-azhar-quran',
+    volumeInfo: {
+      title: 'القرآن الكريم والتجويد - ثانوية أزهرية',
+      authors: ['قطاع المعاهد الأزهرية'],
+      description: 'مقرر القرآن الكريم وأحكام التجويد لطلاب المرحلة الثانوية الأزهرية.',
+      pageCount: 604,
+      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'قرآن كريم'],
+      infoLink: '#',
+    }
   },
   {
-    id: '6',
-    title: 'علم النفس الإدراكي',
-    category: 'علم النفس',
-    author: 'روبرت ستيرنبرغ',
-    pages: 540,
-    coverColor: 'bg-purple-500',
-    description: 'دراسة لكيفية تفكير الإنسان، تعلمه، وتذكره للأشياء.',
-    url: '#',
+    id: 'edu-azhar-hadith',
+    volumeInfo: {
+      title: 'الحديث الشريف - ثانوية أزهرية',
+      authors: ['قطاع المعاهد الأزهرية'],
+      description: 'الأحاديث النبوية المقررة وشرحها لطلاب الثانوية الأزهرية.',
+      pageCount: 220,
+      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'علوم شرعية'],
+      infoLink: '#',
+    }
+  },
+  // مراحل نقل وإعدادي
+  {
+    id: 'edu-eg-prep-science',
+    volumeInfo: {
+      title: 'العلوم - الصف الثالث الإعدادي',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'منهج العلوم للشهادة الإعدادية: التفاعلات الكيميائية، الطاقة الفيزيائية، والجينات الوراثية.',
+      pageCount: 180,
+      categories: ['إعدادي', 'مناهج مصرية', 'علوم'],
+      infoLink: '#',
+    }
+  },
+  {
+    id: 'edu-eg-primary-arabic',
+    volumeInfo: {
+      title: 'اللغة العربية (تواصل) - المرحلة الابتدائية',
+      authors: ['وزارة التربية والتعليم المصرية'],
+      description: 'منهج اللغة العربية الجديد للمرحلة الابتدائية في مصر.',
+      pageCount: 150,
+      categories: ['ابتدائي', 'مناهج مصرية', 'لغة عربية'],
+      infoLink: '#',
+    }
+  },
+  // جامعات
+  {
+    id: 'edu-uni-anatomy',
+    volumeInfo: {
+      title: 'أساسيات علم التشريح البشري',
+      authors: ['نخبة من أساتذة كليات الطب'],
+      description: 'المرجع الأساسي لطلاب كليات الطب والصيدلة في الجامعات المصرية.',
+      pageCount: 850,
+      categories: ['جامعات', 'بكالوريا', 'طب'],
+      infoLink: '#',
+    }
+  },
+  {
+    id: 'edu-uni-engineering',
+    volumeInfo: {
+      title: 'مقدمة في الهندسة الإنشائية',
+      authors: ['أساتذة كلية الهندسة'],
+      description: 'كتاب تمهيدي لطلاب كليات الهندسة - قسم مدني.',
+      pageCount: 520,
+      categories: ['جامعات', 'بكالوريا', 'هندسة'],
+      infoLink: '#',
+    }
   }
 ];
 
 export default function LibraryView() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('الكل');
+  const [books, setBooks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEducationalSearch, setIsEducationalSearch] = useState(false);
 
-  const categories = ['الكل', ...Array.from(new Set(STATIC_BOOKS.map(b => b.category)))];
+  const fetchBooks = async (query: string, eduSearch: boolean = false) => {
+    setIsLoading(true);
+    try {
+      let apiQuery = query;
+      if (eduSearch && !apiQuery.includes('منهج') && !apiQuery.includes('مدرسي')) {
+        apiQuery = `${query} كتاب مدرسي منهج تعليمي`;
+      }
 
-  const filteredBooks = STATIC_BOOKS.filter(book => {
-    const matchesSearch = book.title.includes(searchTerm) || book.author.includes(searchTerm);
-    const matchesCategory = selectedCategory === 'الكل' || book.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+      // Using Google Books API to fetch books from around the world
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(apiQuery)}&maxResults=24`);
+      const data = await res.json();
+      
+      let fetchedItems = data.items || [];
 
-  const handleDownload = (bookTitle: string) => {
-    // In a real application, this would trigger a file download.
-    alert(`بدأ تحميل كتاب: ${bookTitle} بصيغة PDF`);
+      // Fallback for empty results: try broader search
+      if (fetchedItems.length === 0) {
+        const words = apiQuery.split(' ').filter(w => w.length > 2);
+        if (words.length > 1) {
+          const broaderQuery = words.join('+');
+          const fallbackRes = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(broaderQuery)}&maxResults=24`);
+          const fallbackData = await fallbackRes.json();
+          fetchedItems = fallbackData.items || [];
+        }
+      }
+
+      // Inject local educational curriculums if relevant
+      const qLower = query.toLowerCase();
+      const isCurriculumSearch = eduSearch || qLower.includes('منهج') || qLower.includes('دراسي') || qLower.includes('تعليم') || qLower.includes('مناهج');
+
+      
+      const localMatches = EDUCATIONAL_BOOKS.filter(book => 
+        isCurriculumSearch ||
+        book.volumeInfo.title.toLowerCase().includes(qLower) ||
+        book.volumeInfo.categories.some(c => c.toLowerCase().includes(qLower)) ||
+        book.volumeInfo.description.toLowerCase().includes(qLower)
+      );
+
+      // Combine local matches and fetched items
+      let combined = [...localMatches, ...fetchedItems];
+      
+      // Remove duplicates
+      combined = Array.from(new Map(combined.map(item => [item.id, item])).values());
+
+      setBooks(combined);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      // Fallback to local books on error
+      const qLower = query.toLowerCase();
+      const localMatches = EDUCATIONAL_BOOKS.filter(book => book.volumeInfo.title.toLowerCase().includes(qLower));
+      setBooks(localMatches);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch some interesting books by default
+  useEffect(() => {
+    fetchBooks('ثانوية عامة مصرية أزهرية');
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      fetchBooks(searchTerm, isEducationalSearch);
+    } else {
+      fetchBooks('ثانوية عامة مصرية أزهرية', isEducationalSearch);
+    }
   };
 
   return (
@@ -87,82 +210,138 @@ export default function LibraryView() {
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-3">
             <BookMarked className="text-emerald-500" size={32} />
-            المكتبة الدراسية
+            المكتبة العالمية
           </h2>
-          <p className="text-slate-500 mt-2">تصفح وحمل الكتب والمراجع بصيغة PDF لمساعدتك في المذاكرة.</p>
+          <p className="text-slate-500 mt-2">ابحث وتصفح ملايين الكتب من جميع أنحاء العالم في كافة التخصصات.</p>
         </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+      <div>
+        <form onSubmit={handleSearch} className="relative w-full mb-3">
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
           <input
             type="text"
-            placeholder="ابحث عن كتاب أو مؤلف..."
+            placeholder="ابحث عن أي كتاب، مؤلف، أو موضوع في العالم..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pr-10 pl-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pr-12 pl-28 py-4 outline-none focus:ring-2 focus:ring-emerald-500 text-lg shadow-sm"
           />
+          <button 
+            type="submit"
+            disabled={isLoading}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {isLoading ? <Loader2 size={20} className="animate-spin" /> : 'بحث'}
+          </button>
+        </form>
+        <div className="flex items-center gap-2 px-2">
+          <input 
+            type="checkbox" 
+            id="edu-search"
+            checked={isEducationalSearch}
+            onChange={(e) => setIsEducationalSearch(e.target.checked)}
+            className="w-4 h-4 text-emerald-600 bg-slate-100 border-slate-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-700 dark:border-slate-600"
+          />
+          <label htmlFor="edu-search" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+            تخصيص البحث في المناهج والنظم التعليمية (الكتب والمقررات الدراسية)
+          </label>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-xl whitespace-nowrap font-medium transition-colors ${
-                selectedCategory === category
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+      </div>
+
+      {/* Quick Searches */}
+      <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+        {['ثانوية عامة', 'ثانوية أزهرية', 'مناهج مصرية', 'جامعات وبكالوريا', 'روايات عالمية'].map(term => (
+           <button
+             key={term}
+             onClick={() => {
+               setSearchTerm(term);
+               fetchBooks(term, isEducationalSearch);
+             }}
+             type="button"
+            className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-700"
+          >
+            {term}
+          </button>
+        ))}
       </div>
 
       {/* Books Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBooks.length > 0 ? (
-          filteredBooks.map(book => (
-            <div key={book.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
-              {/* Book Cover Placeholder */}
-              <div className={`h-40 ${book.coverColor} flex items-center justify-center relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-black/10 mix-blend-multiply"></div>
-                <FileText size={64} className="text-white/80" strokeWidth={1} />
-                <div className="absolute bottom-2 right-3 text-white/90 text-sm font-medium bg-black/20 px-2 py-1 rounded">
-                  {book.category}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {books.length > 0 ? (
+          books.map(book => {
+            const info = book.volumeInfo;
+            // Convert to https to avoid mixed content warnings
+            const coverUrl = info.imageLinks?.thumbnail?.replace('http:', 'https:') || null;
+            
+            return (
+              <div key={book.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col group hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="h-56 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative overflow-hidden">
+                  {coverUrl ? (
+                    <img src={coverUrl} alt={info.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  ) : (
+                    <div className="flex flex-col items-center text-slate-400">
+                      <FileText size={48} strokeWidth={1} />
+                      <span className="text-sm mt-2 font-medium">لا يوجد غلاف</span>
+                    </div>
+                  )}
+                  {info.categories?.[0] && (
+                    <div className="absolute top-3 right-3 text-white/90 text-xs font-medium bg-black/60 backdrop-blur-md px-2 py-1 rounded">
+                      {info.categories[0]}
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              {/* Book Info */}
-              <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-xl font-bold mb-1 line-clamp-1" title={book.title}>{book.title}</h3>
-                <p className="text-slate-500 text-sm mb-3">{book.author}</p>
-                <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-4 flex-1">
-                  {book.description}
-                </p>
                 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-xs text-slate-400 font-medium">{book.pages} صفحة</span>
-                  <button 
-                    onClick={() => handleDownload(book.title)}
-                    className="flex items-center gap-2 text-sm bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 px-3 py-2 rounded-lg transition-colors font-medium"
-                  >
-                    <Download size={16} /> تحميل PDF
-                  </button>
+                <div className="p-5 flex flex-col flex-1">
+                  <h3 className="text-lg font-bold mb-1 line-clamp-2" title={info.title}>{info.title}</h3>
+                  <p className="text-emerald-600 dark:text-emerald-400 text-sm mb-3 font-medium">
+                    {info.authors?.join('، ') || 'مؤلف غير معروف'}
+                  </p>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-1">
+                    {info.description || 'لا يوجد وصف متاح لهذا الكتاب.'}
+                  </p>
+                  
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <span className="text-xs text-slate-400 font-medium">
+                      {info.pageCount ? `${info.pageCount} صفحة` : ''}
+                    </span>
+                    <div className="flex gap-2">
+                      <a 
+                        href={info.previewLink || info.infoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-2 rounded-lg transition-colors font-bold"
+                      >
+                        <BookOpen size={14} /> تصفح
+                      </a>
+                      <a 
+                        href={book.accessInfo?.pdf?.downloadLink || book.accessInfo?.epub?.downloadLink || info.infoLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-xs bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 px-3 py-2 rounded-lg transition-colors font-bold"
+                        title="تنزيل إلى الجهاز"
+                      >
+                        <Download size={14} /> تنزيل
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-span-full py-12 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <BookMarked size={48} className="mx-auto mb-4 opacity-50" />
-            <p className="text-lg">لم يتم العثور على كتب مطابقة لبحثك.</p>
+            );
+          })
+        ) : !isLoading ? (
+          <div className="col-span-full py-20 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 border-dashed">
+            <BookMarked size={64} className="mx-auto mb-4 opacity-20" />
+            <p className="text-xl font-bold mb-2 text-slate-700 dark:text-slate-300">لم يتم العثور على نتائج</p>
+            <p className="text-slate-500">جرب البحث بكلمات مختلفة أو اسم مؤلف آخر.</p>
           </div>
-        )}
+        ) : null}
       </div>
+      
+      {isLoading && books.length === 0 && (
+        <div className="flex justify-center items-center py-32">
+           <Loader2 size={48} className="animate-spin text-emerald-500" />
+        </div>
+      )}
     </div>
   );
 }

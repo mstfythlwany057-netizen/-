@@ -1,5 +1,5 @@
 {
-  "name": "طريق النجاح",
+  "name": "Thrive - Smart Study Assistant",
   "description": "An intelligent Arabic study assistant app with smart scheduling, Pomodoro focus mode, achievement tracking, AI tutoring, and image analysis.",
   "requestFramePermissions": [
     "camera"
