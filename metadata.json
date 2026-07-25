@@ -1,0 +1,10 @@
+{
+  "name": "طريق النجاح",
+  "description": "An intelligent Arabic study assistant app with smart scheduling, Pomodoro focus mode, achievement tracking, AI tutoring, and image analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
