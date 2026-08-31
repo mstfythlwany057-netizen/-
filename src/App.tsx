@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { LayoutDashboard, Calendar, Timer, Bot, Settings, BookOpen, PenTool, Library } from "lucide-react";
+import { LayoutDashboard, Calendar, Timer, Bot, Settings, BookOpen, Library } from "lucide-react";
 import { useAppStore } from "./store";
 import DashboardView from "./components/DashboardView";
 import ScheduleView from "./components/ScheduleView";
 import FocusView from "./components/FocusView";
 import AiTutorView from "./components/AiTutorView";
-import AiGeneratorView from "./components/AiGeneratorView";
 import SettingsView from "./components/SettingsView";
 import LibraryView from "./components/LibraryView";
 
-type Tab = "dashboard" | "schedule" | "focus" | "tutor" | "generator" | "library" | "settings";
+type Tab = "dashboard" | "schedule" | "focus" | "tutor" | "library" | "settings";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
@@ -21,7 +20,6 @@ export default function App() {
       case "schedule": return <ScheduleView store={store} />;
       case "focus": return <FocusView store={store} />;
       case "tutor": return <AiTutorView />;
-      case "generator": return <AiGeneratorView />;
       case "library": return <LibraryView />;
       case "settings": return <SettingsView store={store} />;
       default: return <DashboardView store={store} />;
@@ -33,7 +31,6 @@ export default function App() {
     { id: "schedule", label: "الجدول", icon: Calendar },
     { id: "focus", label: "التركيز", icon: Timer },
     { id: "tutor", label: "المعلم الذكي", icon: Bot },
-    { id: "generator", label: "توليد الصور", icon: PenTool },
     { id: "library", label: "المكتبة", icon: Library },
     { id: "settings", label: "الإعدادات", icon: Settings },
   ] as const;

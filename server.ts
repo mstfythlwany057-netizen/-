@@ -58,46 +58,6 @@ async function startServer() {
     }
   });
 
-  // API Route: Image Generation
-  app.post("/api/generate-image", async (req, res) => {
-    try {
-      const { prompt } = req.body;
-      
-      const interaction = await ai.interactions.create({
-        model: "gemini-3.1-flash-image",
-        input: prompt,
-        response_modalities: ["image"],
-        generation_config: {
-          image_config: {
-            aspect_ratio: "1:1",
-            image_size: "1K"
-          }
-        }
-      });
-
-      let imageUrl = null;
-      for (const step of interaction.steps) {
-        if (step.type === "model_output") {
-          const imageContent = step.content?.find((c: any) => c.type === "image");
-          if (imageContent && imageContent.data) {
-            const base64Data = imageContent.data;
-            const mimeType = imageContent.mime_type || "image/png";
-            imageUrl = `data:${mimeType};base64,${base64Data}`;
-          }
-        }
-      }
-
-      if (imageUrl) {
-        res.json({ result: imageUrl });
-      } else {
-        res.status(500).json({ error: "No image generated." });
-      }
-    } catch (error: any) {
-      console.error("Image generation error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
