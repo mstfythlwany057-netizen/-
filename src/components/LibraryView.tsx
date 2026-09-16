@@ -1,190 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { BookMarked, Search, FileText, Loader2, BookOpen, Download } from 'lucide-react';
+import { BookMarked, Search, FileText, Loader2, BookOpen, Download, ShieldAlert, ShieldCheck } from 'lucide-react';
 
-const EDUCATIONAL_BOOKS = [
-  // ثانوية عامة
-  {
-    id: 'edu-eg-thanawya-arabic',
-    volumeInfo: {
-      title: 'اللغة العربية - الصف الثالث الثانوي العام',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'المنهج الرسمي للغة العربية للثانوية العامة: النحو، الصرف، البلاغة، الأدب والنصوص، والقراءة.',
-      pageCount: 350,
-      categories: ['ثانوية عامة', 'مناهج مصرية', 'لغة عربية'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-eg-thanawya-physics',
-    volumeInfo: {
-      title: 'الفيزياء - الصف الثالث الثانوي العام',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'منهج الفيزياء للثانوية العامة: الكهربية والتيار المتردد، والفيزياء الحديثة (ميكانيكا الكم والفيزياء الذرية).',
-      pageCount: 420,
-      categories: ['ثانوية عامة', 'مناهج مصرية', 'فيزياء'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-eg-thanawya-math-pure',
-    volumeInfo: {
-      title: 'الرياضيات البحتة (التفاضل والتكامل) - ثانوية عامة',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'كتاب الرياضيات البحتة (التفاضل والتكامل) لطلاب الصف الثالث الثانوي (علمي رياضة).',
-      pageCount: 290,
-      categories: ['ثانوية عامة', 'مناهج مصرية', 'رياضيات'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-eg-thanawya-history',
-    volumeInfo: {
-      title: 'التاريخ - الصف الثالث الثانوي (أدبي)',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'تاريخ مصر الحديث والمعاصر، وتاريخ العرب الحديث للثانوية العامة (القسم الأدبي).',
-      pageCount: 310,
-      categories: ['ثانوية عامة', 'مناهج مصرية', 'تاريخ'],
-      infoLink: '#',
-    }
-  },
-  // ثانوية أزهرية
-  {
-    id: 'edu-azhar-fiqh',
-    volumeInfo: {
-      title: 'الفقه المذهبي - ثانوية أزهرية',
-      authors: ['قطاع المعاهد الأزهرية'],
-      description: 'كتاب الفقه المقرر على طلاب الصف الثالث الثانوي الأزهري (القسمين العلمي والأدبي).',
-      pageCount: 450,
-      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'علوم شرعية'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-azhar-quran',
-    volumeInfo: {
-      title: 'القرآن الكريم والتجويد - ثانوية أزهرية',
-      authors: ['قطاع المعاهد الأزهرية'],
-      description: 'مقرر القرآن الكريم وأحكام التجويد لطلاب المرحلة الثانوية الأزهرية.',
-      pageCount: 604,
-      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'قرآن كريم'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-azhar-hadith',
-    volumeInfo: {
-      title: 'الحديث الشريف - ثانوية أزهرية',
-      authors: ['قطاع المعاهد الأزهرية'],
-      description: 'الأحاديث النبوية المقررة وشرحها لطلاب الثانوية الأزهرية.',
-      pageCount: 220,
-      categories: ['ثانوية أزهرية', 'مناهج مصرية', 'علوم شرعية'],
-      infoLink: '#',
-    }
-  },
-  // مراحل نقل وإعدادي
-  {
-    id: 'edu-eg-prep-science',
-    volumeInfo: {
-      title: 'العلوم - الصف الثالث الإعدادي',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'منهج العلوم للشهادة الإعدادية: التفاعلات الكيميائية، الطاقة الفيزيائية، والجينات الوراثية.',
-      pageCount: 180,
-      categories: ['إعدادي', 'مناهج مصرية', 'علوم'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-eg-primary-arabic',
-    volumeInfo: {
-      title: 'اللغة العربية (تواصل) - المرحلة الابتدائية',
-      authors: ['وزارة التربية والتعليم المصرية'],
-      description: 'منهج اللغة العربية الجديد للمرحلة الابتدائية في مصر.',
-      pageCount: 150,
-      categories: ['ابتدائي', 'مناهج مصرية', 'لغة عربية'],
-      infoLink: '#',
-    }
-  },
-  // جامعات
-  {
-    id: 'edu-uni-anatomy',
-    volumeInfo: {
-      title: 'أساسيات علم التشريح البشري',
-      authors: ['نخبة من أساتذة كليات الطب'],
-      description: 'المرجع الأساسي لطلاب كليات الطب والصيدلة في الجامعات المصرية.',
-      pageCount: 850,
-      categories: ['جامعات', 'بكالوريا', 'طب'],
-      infoLink: '#',
-    }
-  },
-  {
-    id: 'edu-uni-engineering',
-    volumeInfo: {
-      title: 'مقدمة في الهندسة الإنشائية',
-      authors: ['أساتذة كلية الهندسة'],
-      description: 'كتاب تمهيدي لطلاب كليات الهندسة - قسم مدني.',
-      pageCount: 520,
-      categories: ['جامعات', 'بكالوريا', 'هندسة'],
-      infoLink: '#',
-    }
-  }
+// قائمة بالكلمات المحظورة لتفعيل الوضع الآمن
+const BANNED_KEYWORDS = [
+  'محظور', 'ممنوع', 'جنس', 'sex', 'porn', 'adult', 'erotica', '+18', 'للبالغين', 'kamastra', 'kama sutra'
 ];
+
+const isSafeContent = (text?: string) => {
+  if (!text) return true;
+  const lowerText = text.toLowerCase();
+  return !BANNED_KEYWORDS.some(keyword => lowerText.includes(keyword));
+};
 
 export default function LibraryView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [books, setBooks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isEducationalSearch, setIsEducationalSearch] = useState(false);
+  const [safeModeAlert, setSafeModeAlert] = useState(false);
 
-  const fetchBooks = async (query: string, eduSearch: boolean = false) => {
+  const fetchBooks = async (query: string) => {
     setIsLoading(true);
+    setSafeModeAlert(false);
     try {
-      let apiQuery = query;
-      if (eduSearch && !apiQuery.includes('منهج') && !apiQuery.includes('مدرسي')) {
-        apiQuery = `${query} كتاب مدرسي منهج تعليمي`;
-      }
-
-      // Using Google Books API to fetch books from around the world
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(apiQuery)}&maxResults=24`);
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40`);
       const data = await res.json();
       
       let fetchedItems = data.items || [];
-
-      // Fallback for empty results: try broader search
-      if (fetchedItems.length === 0) {
-        const words = apiQuery.split(' ').filter(w => w.length > 2);
-        if (words.length > 1) {
-          const broaderQuery = words.join('+');
-          const fallbackRes = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(broaderQuery)}&maxResults=24`);
-          const fallbackData = await fallbackRes.json();
-          fetchedItems = fallbackData.items || [];
-        }
-      }
-
-      // Inject local educational curriculums if relevant
-      const qLower = query.toLowerCase();
-      const isCurriculumSearch = eduSearch || qLower.includes('منهج') || qLower.includes('دراسي') || qLower.includes('تعليم') || qLower.includes('مناهج');
-
       
-      const localMatches = EDUCATIONAL_BOOKS.filter(book => 
-        isCurriculumSearch ||
-        book.volumeInfo.title.toLowerCase().includes(qLower) ||
-        book.volumeInfo.categories.some(c => c.toLowerCase().includes(qLower)) ||
-        book.volumeInfo.description.toLowerCase().includes(qLower)
-      );
+      // تطبيق الوضع الآمن (فلترة الكتب المحظورة)
+      fetchedItems = fetchedItems.filter((book: any) => {
+        const info = book.volumeInfo;
+        return (
+          isSafeContent(info.title) &&
+          isSafeContent(info.description) &&
+          isSafeContent(info.categories?.join(' '))
+        );
+      });
 
-      // Combine local matches and fetched items
-      let combined = [...localMatches, ...fetchedItems];
-      
-      // Remove duplicates
-      combined = Array.from(new Map(combined.map(item => [item.id, item])).values());
-
-      setBooks(combined);
+      // أخذ أول 24 كتاب سليم
+      setBooks(fetchedItems.slice(0, 24));
     } catch (error) {
       console.error("Error fetching books:", error);
-      // Fallback to local books on error
-      const qLower = query.toLowerCase();
-      const localMatches = EDUCATIONAL_BOOKS.filter(book => book.volumeInfo.title.toLowerCase().includes(qLower));
-      setBooks(localMatches);
+      setBooks([]);
     } finally {
       setIsLoading(false);
     }
@@ -192,15 +49,20 @@ export default function LibraryView() {
 
   // Fetch some interesting books by default
   useEffect(() => {
-    fetchBooks('ثانوية عامة مصرية أزهرية');
+    fetchBooks('تطوير الذات والبرمجة');
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      fetchBooks(searchTerm, isEducationalSearch);
+      if (!isSafeContent(searchTerm)) {
+        setBooks([]);
+        setSafeModeAlert(true);
+        return;
+      }
+      fetchBooks(searchTerm);
     } else {
-      fetchBooks('ثانوية عامة مصرية أزهرية', isEducationalSearch);
+      fetchBooks('تطوير الذات والبرمجة');
     }
   };
 
@@ -210,60 +72,54 @@ export default function LibraryView() {
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-3">
             <BookMarked className="text-emerald-500" size={32} />
-            المكتبة العالمية
+            المكتبة (الوضع الآمن)
+            <ShieldCheck className="text-emerald-500" size={24} title="الوضع الآمن مفعل" />
           </h2>
-          <p className="text-slate-500 mt-2">ابحث وتصفح ملايين الكتب من جميع أنحاء العالم في كافة التخصصات.</p>
+          <p className="text-slate-500 mt-2">ابحث وتصفح ملايين الكتب في بيئة نظيفة وآمنة وخالية من المحتوى المحظور.</p>
         </div>
       </div>
 
-      <div>
-        <form onSubmit={handleSearch} className="relative w-full mb-3">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
-          <input
-            type="text"
-            placeholder="ابحث عن أي كتاب، مؤلف، أو موضوع في العالم..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pr-12 pl-28 py-4 outline-none focus:ring-2 focus:ring-emerald-500 text-lg shadow-sm"
-          />
-          <button 
-            type="submit"
-            disabled={isLoading}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
-          >
-            {isLoading ? <Loader2 size={20} className="animate-spin" /> : 'بحث'}
-          </button>
-        </form>
-        <div className="flex items-center gap-2 px-2">
-          <input 
-            type="checkbox" 
-            id="edu-search"
-            checked={isEducationalSearch}
-            onChange={(e) => setIsEducationalSearch(e.target.checked)}
-            className="w-4 h-4 text-emerald-600 bg-slate-100 border-slate-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-700 dark:border-slate-600"
-          />
-          <label htmlFor="edu-search" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
-            تخصيص البحث في المناهج والنظم التعليمية (الكتب والمقررات الدراسية)
-          </label>
-        </div>
-      </div>
+      <form onSubmit={handleSearch} className="relative w-full">
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
+        <input
+          type="text"
+          placeholder="ابحث عن أي كتاب، مؤلف، أو موضوع..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pr-12 pl-28 py-4 outline-none focus:ring-2 focus:ring-emerald-500 text-lg shadow-sm"
+        />
+        <button 
+          type="submit"
+          disabled={isLoading}
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+        >
+          {isLoading ? <Loader2 size={20} className="animate-spin" /> : 'بحث'}
+        </button>
+      </form>
 
       {/* Quick Searches */}
       <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-        {['ثانوية عامة', 'ثانوية أزهرية', 'مناهج مصرية', 'جامعات وبكالوريا', 'روايات عالمية'].map(term => (
-           <button
-             key={term}
-             onClick={() => {
-               setSearchTerm(term);
-               fetchBooks(term, isEducationalSearch);
-             }}
-             type="button"
+        {['تطوير الذات والبرمجة', 'الذكاء الاصطناعي', 'التاريخ الإسلامي', 'روايات عالمية', 'علم النفس والفلسفة'].map(term => (
+          <button
+            key={term}
+            onClick={() => {
+              setSearchTerm(term);
+              if (isSafeContent(term)) fetchBooks(term);
+            }}
+            type="button"
             className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors whitespace-nowrap border border-slate-200 dark:border-slate-700"
           >
             {term}
           </button>
         ))}
       </div>
+
+      {safeModeAlert && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-4 rounded-xl flex items-center gap-3">
+          <ShieldAlert size={24} />
+          <p className="font-medium">تم حظر عملية البحث. الكلمة المدخلة تحتوي على محتوى غير لائق ومخالف للوضع الآمن.</p>
+        </div>
+      )}
 
       {/* Books Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
